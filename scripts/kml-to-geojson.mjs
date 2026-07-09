@@ -1,0 +1,244 @@
+// Conversor KMZ/KML → GeoJSON por capas para src/data/generated/.
+//
+// Uso:
+//   npm run convert -- ~/mi-mapa.kmz            # escribe src/data/generated/
+//   npm run convert -- ~/mi-mapa.kmz --dry-run  # solo muestra la tabla de mapeo
+//   npm run convert -- doc.kml --out otra/ruta
+//
+// Reglas de mapeo:
+//   - Carpeta de primer nivel → grupo, según GROUP_MAP (o inferencia por geometría).
+//   - Cada línea con nombre → una capa (segmentos con el mismo nombre se agrupan);
+//     líneas sin nombre se agrupan por carpeta + color.
+//   - Cada punto con icono visible → una capa de pin individual.
+//   - Puntos sin icono (o con icon-scale 0) → capa de notas por carpeta.
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, join } from "node:path";
+import AdmZip from "adm-zip";
+import { DOMParser } from "@xmldom/xmldom";
+import { kmlWithFolders } from "@tmcw/togeojson";
+
+// Carpeta de Google Earth (insensible a mayúsculas/acentos) → grupo de la app.
+const GROUP_MAP = {
+  vias: "vias",
+  rutas: "vias",
+  caminos: "vias",
+  pines: "pines",
+  marcadores: "pines",
+  puntos: "pines",
+  notas: "notas",
+  etiquetas: "notas",
+  textos: "notas",
+};
+
+const GROUP_LABEL = { vias: "Vías", pines: "Pines", notas: "Notas" };
+const FALLBACK_ROUTE_COLORS = ["#00e5ff", "#4ade80", "#facc15", "#fb7185", "#a78bfa", "#fb923c"];
+
+// ── CLI ──
+const args = process.argv.slice(2);
+const dryRun = args.includes("--dry-run");
+const outFlag = args.indexOf("--out");
+const outDir = outFlag !== -1 ? args[outFlag + 1] : "src/data/generated";
+const input = args.find((a) => !a.startsWith("--") && a !== outDir);
+if (!input) {
+  console.error("Uso: node scripts/kml-to-geojson.mjs <archivo.kmz|.kml> [--out dir] [--dry-run]");
+  process.exit(1);
+}
+
+// ── Leer KML (desempaquetar KMZ si aplica) ──
+const raw = readFileSync(input);
+let kmlText;
+if (raw.subarray(0, 2).toString() === "PK") {
+  const zip = new AdmZip(raw);
+  const entry =
+    zip.getEntry("doc.kml") ??
+    zip.getEntries().find((e) => e.entryName.toLowerCase().endsWith(".kml"));
+  if (!entry) {
+    console.error("El KMZ no contiene ningún .kml");
+    process.exit(1);
+  }
+  kmlText = zip.readAsText(entry);
+} else {
+  kmlText = raw.toString("utf-8");
+}
+
+const dom = new DOMParser().parseFromString(kmlText, "text/xml");
+const tree = kmlWithFolders(dom);
+
+// ── Utilidades ──
+const slug = (s) =>
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60) || "capa";
+
+const normKey = (s) => slug(s).replace(/-/g, "");
+
+// KML codifica color como aabbggrr; togeojson ya lo normaliza a #rrggbb en
+// `stroke`, pero dejamos el fallback por si llega un valor crudo.
+function kmlColorToHex(c) {
+  if (!c) return null;
+  if (c.startsWith("#")) return c.slice(0, 7);
+  if (/^[0-9a-fA-F]{8}$/.test(c)) {
+    return "#" + c.slice(6, 8) + c.slice(4, 6) + c.slice(2, 4);
+  }
+  return null;
+}
+
+function stripAltitude(coords) {
+  if (typeof coords[0] === "number") {
+    return [Math.round(coords[0] * 1e6) / 1e6, Math.round(coords[1] * 1e6) / 1e6];
+  }
+  return coords.map(stripAltitude);
+}
+
+function isLine(f) {
+  return ["LineString", "MultiLineString"].includes(f.geometry?.type);
+}
+function isPoint(f) {
+  return ["Point", "MultiPoint"].includes(f.geometry?.type);
+}
+function isNota(f) {
+  const p = f.properties ?? {};
+  return isPoint(f) && (!p.icon || p["icon-scale"] === 0);
+}
+
+function inferGroup(f) {
+  if (isLine(f)) return "vias";
+  if (isNota(f)) return "notas";
+  if (isPoint(f)) return "pines";
+  return "vias"; // polígonos u otros: se dibujan como contorno en vías
+}
+
+// ── Recorrer el árbol de carpetas acumulando features con contexto ──
+const collected = []; // { feature, folders: [nombres...], group }
+function walk(node, folders) {
+  if (node.type === "folder") {
+    const name = node.meta?.name ?? "";
+    for (const child of node.children ?? []) walk(child, [...folders, name]);
+    return;
+  }
+  if (node.type === "root") {
+    for (const child of node.children ?? []) walk(child, folders);
+    return;
+  }
+  // Feature
+  const top = folders.find((f) => GROUP_MAP[normKey(f)]);
+  const group = top ? GROUP_MAP[normKey(top)] : inferGroup(node);
+  collected.push({ feature: node, folders, group });
+}
+walk(tree, []);
+
+if (collected.length === 0) {
+  console.error("El archivo no contiene placemarks convertibles.");
+  process.exit(1);
+}
+
+// ── Agrupar features en capas ──
+const layerMap = new Map(); // key → { meta-parcial, features }
+let routeColorIdx = 0;
+
+function upsert(key, init, feature) {
+  let entry = layerMap.get(key);
+  if (!entry) {
+    entry = { ...init, features: [] };
+    layerMap.set(key, entry);
+  }
+  entry.features.push(feature);
+  return entry;
+}
+
+for (const { feature, folders, group } of collected) {
+  const p = feature.properties ?? {};
+  const name = (p.name ?? "").trim();
+  const folderName = folders[folders.length - 1] ?? "";
+  const geometry = { ...feature.geometry, coordinates: stripAltitude(feature.geometry.coordinates) };
+
+  if (group === "vias" || isLine(feature)) {
+    const color =
+      kmlColorToHex(p.stroke) ??
+      FALLBACK_ROUTE_COLORS[routeColorIdx++ % FALLBACK_ROUTE_COLORS.length];
+    const layerName = name || (folderName ? `${folderName} (${color})` : `Ruta ${color}`);
+    const key = `vias/${slug(name || folderName + "-" + color)}`;
+    const entry = upsert(
+      key,
+      { group: "vias", kind: "route", name: layerName, color },
+      { type: "Feature", properties: { name }, geometry },
+    );
+    if (kmlColorToHex(p.stroke)) entry.color = kmlColorToHex(p.stroke);
+  } else if (group === "notas" || isNota(feature)) {
+    const key = `notas/${slug(folderName || "notas")}`;
+    upsert(
+      key,
+      {
+        group: "notas",
+        kind: "label",
+        name:
+          folderName && normKey(folderName) !== "notas"
+            ? `Notas: ${folderName}`
+            : "Notas",
+        color: "#ffffff",
+      },
+      { type: "Feature", properties: { text: name }, geometry },
+    );
+  } else {
+    // Pin individual: una capa por placemark para poder togglearlo solo.
+    const pinName = name || `Pin ${layerMap.size + 1}`;
+    const key = `pines/${slug(pinName)}`;
+    upsert(
+      key,
+      { group: "pines", kind: "pin", name: pinName, color: "#ffd400" },
+      { type: "Feature", properties: { name: pinName }, geometry },
+    );
+  }
+}
+
+// ── Emitir ──
+const orderByGroup = { vias: 0, pines: 0, notas: 0 };
+const rows = [];
+const outputs = [];
+for (const [key, entry] of layerMap) {
+  const [group, s] = key.split("/");
+  const id = group === "pines" ? `pin-${s}` : group === "vias" ? `ruta-${s}` : `nota-${s}`;
+  const order = ++orderByGroup[group];
+  const file = join(outDir, group, `${s}.json`);
+  outputs.push({
+    file,
+    json: {
+      type: "FeatureCollection",
+      metadata: {
+        id,
+        name: entry.name,
+        group,
+        kind: entry.kind,
+        color: entry.color,
+        defaultVisible: true,
+        order,
+      },
+      features: entry.features,
+    },
+  });
+  rows.push({
+    archivo: file.replace(`${outDir}/`, ""),
+    grupo: GROUP_LABEL[group],
+    nombre: entry.name,
+    color: entry.color,
+    features: entry.features.length,
+  });
+}
+
+console.log(`\nEntrada: ${basename(input)} — ${collected.length} placemarks → ${outputs.length} capas\n`);
+console.table(rows);
+
+if (dryRun) {
+  console.log("(--dry-run: no se escribió nada)");
+} else {
+  for (const { file, json } of outputs) {
+    mkdirSync(join(file, ".."), { recursive: true });
+    writeFileSync(file, JSON.stringify(json, null, 1));
+  }
+  console.log(`Escrito en ${outDir}/ — la app usará estos datos en lugar de los placeholders.`);
+  console.log("Para volver a los placeholders: borra el contenido de ese directorio.");
+}
