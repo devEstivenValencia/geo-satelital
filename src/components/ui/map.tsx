@@ -1280,6 +1280,8 @@ type MapGeoJSONProps<
    * `false` to omit the layer.
    */
   linePaint?: MapLinePaint | false;
+  /** Layout for the outline layer (e.g. rounded line-cap/line-join). */
+  lineLayout?: MapLibreGL.LineLayerSpecification["layout"];
   /**
    * Paint merged onto the fill layer for the feature under the cursor, applied
    * as a `case` expression keyed on hover feature-state. Requires `promoteId`.
@@ -1318,6 +1320,7 @@ function MapGeoJSON<
   promoteId,
   fillPaint,
   linePaint,
+  lineLayout,
   fillHoverPaint,
   onClick,
   onHover,
@@ -1413,6 +1416,7 @@ function MapGeoJSON<
           id: lineLayerId,
           type: "line",
           source: sourceId,
+          ...(lineLayout ? { layout: lineLayout } : {}),
           paint: mergedLinePaint,
         },
         beforeId,
@@ -1449,6 +1453,7 @@ function MapGeoJSON<
     showLine,
     mergedFillPaint,
     mergedLinePaint,
+    lineLayout,
     beforeId,
   ]);
 

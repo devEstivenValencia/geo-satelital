@@ -1,0 +1,51 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "ruta-amarilla",
+  "name": "Vía El Carmen – El Santuario",
+  "group": "vias",
+  "kind": "route",
+  "color": "#facc15",
+  "defaultVisible": true,
+  "order": 3
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {},
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      -75.333,
+      6.085
+     ],
+     [
+      -75.325,
+      6.095
+     ],
+     [
+      -75.315,
+      6.105
+     ],
+     [
+      -75.302,
+      6.112
+     ],
+     [
+      -75.288,
+      6.123
+     ],
+     [
+      -75.276,
+      6.13
+     ],
+     [
+      -75.264,
+      6.137
+     ]
+    ]
+   }
+  }
+ ]
+}

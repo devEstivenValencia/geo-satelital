@@ -1,0 +1,118 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "notas-lugares",
+  "name": "Nombres de lugares",
+  "group": "notas",
+  "kind": "label",
+  "color": "#ffffff",
+  "defaultVisible": true,
+  "order": 1
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "text": "Rionegro"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.377,
+     6.153
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "text": "La Ceja"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.431,
+     6.028
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "text": "Marinilla"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.336,
+     6.174
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "text": "Guarne"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.443,
+     6.28
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "text": "El Carmen de Viboral"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.333,
+     6.085
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "text": "El Santuario"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.264,
+     6.137
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "text": "Santa Elena"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.497,
+     6.211
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "text": "Aeropuerto Internacional José María Córdova"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.423,
+     6.164
+    ]
+   }
+  }
+ ]
+}

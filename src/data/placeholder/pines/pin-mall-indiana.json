@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-mall-indiana",
+  "name": "Mall Indiana",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 4
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Mall Indiana"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.53,
+     6.16
+    ]
+   }
+  }
+ ]
+}

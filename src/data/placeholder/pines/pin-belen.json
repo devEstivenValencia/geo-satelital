@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-belen",
+  "name": "Belén",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 5
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Belén"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.356,
+     6.19
+    ]
+   }
+  }
+ ]
+}

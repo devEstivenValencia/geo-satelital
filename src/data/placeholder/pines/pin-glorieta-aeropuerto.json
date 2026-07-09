@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-glorieta-aeropuerto",
+  "name": "Glorieta Aeropuerto",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 1
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Glorieta Aeropuerto"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.4266,
+     6.1697
+    ]
+   }
+  }
+ ]
+}
