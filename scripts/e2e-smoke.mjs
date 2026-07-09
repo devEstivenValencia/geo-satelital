@@ -106,8 +106,12 @@ const hasSlides = await page.evaluate(() => (window.__slides?.length ?? 0) > 1);
 if (!hasSlides) {
   console.log("SKIP  C: aún no hay modo presentación");
 } else {
+  // La primera flecha entra a la diapositiva 0; la segunda va a la 1.
   await page.keyboard.press("ArrowRight");
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(400);
+  await page.waitForFunction(() => !window.__map.isMoving(), { timeout: 20_000 });
+  await page.keyboard.press("ArrowRight");
+  await page.waitForTimeout(400);
   await page.waitForFunction(() => !window.__map.isMoving(), { timeout: 20_000 });
   const { ok, detail } = await page.evaluate(() => {
     const slide = window.__slides[1];
