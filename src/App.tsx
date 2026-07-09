@@ -4,6 +4,7 @@ import { RouteLayer } from "@/components/RouteLayer";
 import { PinMarker } from "@/components/PinMarker";
 import { NotaLabel } from "@/components/NotaLabel";
 import { BasemapSwitcher } from "@/components/BasemapSwitcher";
+import { LayerPanel } from "@/components/LayerPanel";
 import { useLayerVisibility } from "@/hooks/useLayerVisibility";
 import { layers } from "@/data/registry";
 import type { BasemapId } from "@/lib/basemaps";
@@ -22,7 +23,8 @@ function LayerRenderer({ layer }: { layer: LayerDef }) {
 
 export default function App() {
   const [basemap, setBasemap] = useState<BasemapId>("satelite");
-  const { visible } = useLayerVisibility(layers);
+  const [panelOpen, setPanelOpen] = useState(true);
+  const { visible, toggle, setGroup, setAll } = useLayerVisibility(layers);
 
   return (
     <div className="relative h-dvh w-full">
@@ -32,6 +34,15 @@ export default function App() {
             visible[layer.id] && <LayerRenderer key={layer.id} layer={layer} />,
         )}
       </MapView>
+      <LayerPanel
+        layers={layers}
+        visible={visible}
+        onToggle={toggle}
+        onSetGroup={setGroup}
+        onSetAll={setAll}
+        open={panelOpen}
+        onOpenChange={setPanelOpen}
+      />
       <BasemapSwitcher value={basemap} onChange={setBasemap} />
     </div>
   );
