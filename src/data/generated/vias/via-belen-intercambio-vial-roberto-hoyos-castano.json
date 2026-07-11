@@ -1,0 +1,89 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "ruta-via-belen-intercambio-vial-roberto-hoyos-castano",
+  "name": "Vía Belén – Intercambio Vial Roberto Hoyos Castaño",
+  "group": "vias",
+  "kind": "route",
+  "color": "#00e5ff",
+  "defaultVisible": true,
+  "order": 1
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Vía Belén – Intercambio Vial Roberto Hoyos Castaño"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      -75.367299,
+      6.179342
+     ],
+     [
+      -75.365761,
+      6.179173
+     ],
+     [
+      -75.364409,
+      6.179485
+     ],
+     [
+      -75.363293,
+      6.179561
+     ],
+     [
+      -75.360895,
+      6.178659
+     ],
+     [
+      -75.360637,
+      6.178252
+     ],
+     [
+      -75.360246,
+      6.17833
+     ],
+     [
+      -75.356936,
+      6.177186
+     ],
+     [
+      -75.355605,
+      6.176669
+     ],
+     [
+      -75.353023,
+      6.175783
+     ],
+     [
+      -75.349833,
+      6.174709
+     ],
+     [
+      -75.347952,
+      6.1741
+     ],
+     [
+      -75.346912,
+      6.173406
+     ],
+     [
+      -75.346385,
+      6.17309
+     ],
+     [
+      -75.345918,
+      6.172766
+     ],
+     [
+      -75.345373,
+      6.172476
+     ]
+    ]
+   }
+  }
+ ]
+}

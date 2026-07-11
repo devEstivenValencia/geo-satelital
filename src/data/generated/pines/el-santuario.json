@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-el-santuario",
+  "name": "El Santuario",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 5
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "El Santuario"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.258516,
+     6.131215
+    ]
+   }
+  }
+ ]
+}

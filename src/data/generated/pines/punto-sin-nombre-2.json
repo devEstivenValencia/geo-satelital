@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-punto-sin-nombre-2",
+  "name": "Punto sin nombre 2",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 8
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Punto sin nombre 2"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.43067,
+     6.253308
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-guarne",
+  "name": "Guarne",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 6
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Guarne"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.44894,
+     6.289735
+    ]
+   }
+  }
+ ]
+}

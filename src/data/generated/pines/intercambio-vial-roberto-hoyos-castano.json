@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-intercambio-vial-roberto-hoyos-castano",
+  "name": "Intercambio Vial Roberto Hoyos Castaño",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 1
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Intercambio Vial Roberto Hoyos Castaño"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.345388,
+     6.172394
+    ]
+   }
+  }
+ ]
+}

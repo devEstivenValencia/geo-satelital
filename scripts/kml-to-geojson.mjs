@@ -31,7 +31,30 @@ const GROUP_MAP = {
 };
 
 const GROUP_LABEL = { vias: "Vías", pines: "Pines", notas: "Notas" };
-const FALLBACK_ROUTE_COLORS = ["#00e5ff", "#4ade80", "#facc15", "#fb7185", "#a78bfa", "#fb923c"];
+const FALLBACK_ROUTE_COLORS = [
+  "#00e5ff", "#4ade80", "#facc15", "#fb7185", "#a78bfa", "#fb923c",
+  "#38bdf8", "#f472b6", "#a3e635", "#818cf8", "#f87171", "#2dd4bf", "#c084fc",
+];
+
+// Lugares nombrados en el pantallazo original (coords aproximadas), usados para
+// auto-nombrar puntos/líneas cuando el KMZ llega como un único placemark con una
+// GeometryCollection (sin carpetas ni nombres por punto — ver flattenGeometryCollection).
+const GAZETTEER = [
+  ["Intercambio Vial Roberto Hoyos Castaño", -75.345, 6.1726],
+  ["Belén", -75.356, 6.19],
+  ["Don Diego", -75.497, 6.088],
+  ["El Santuario", -75.264, 6.137],
+  ["Guarne", -75.443, 6.28],
+  ["Llanogrande", -75.437, 6.108],
+  ["Marinilla", -75.336, 6.174],
+  ["Mall Indiana", -75.53, 6.16],
+  ["Glorieta Aeropuerto", -75.4266, 6.1697],
+  ["La Ceja", -75.431, 6.028],
+  ["Rionegro", -75.377, 6.153],
+  ["El Carmen de Viboral", -75.333, 6.085],
+  ["Santa Elena", -75.497, 6.211],
+];
+const GAZETTEER_MAX_KM = 3.5;
 
 // ── CLI ──
 const args = process.argv.slice(2);
@@ -112,6 +135,107 @@ function inferGroup(f) {
   return "vias"; // polígonos u otros: se dibujan como contorno en vías
 }
 
+function kmBetween([lng1, lat1], [lng2, lat2]) {
+  return Math.hypot(lng1 - lng2, lat1 - lat2) * 111;
+}
+
+function nearestGazetteerName(coord) {
+  let best = null;
+  let bestKm = Infinity;
+  for (const [name, lng, lat] of GAZETTEER) {
+    const km = kmBetween(coord, [lng, lat]);
+    if (km < bestKm) {
+      bestKm = km;
+      best = name;
+    }
+  }
+  return bestKm <= GAZETTEER_MAX_KM ? best : null;
+}
+
+// Asignación greedy sin repetición: se procesan los pares (punto, nombre) del
+// más cercano al más lejano, así un punto lejano no le "roba" el nombre a uno
+// más cercano que compita por el mismo lugar.
+function assignGazetteerNames(coords) {
+  const pairs = [];
+  coords.forEach((coord, i) => {
+    for (const [name, lng, lat] of GAZETTEER) {
+      const km = kmBetween(coord, [lng, lat]);
+      if (km <= GAZETTEER_MAX_KM) pairs.push({ i, name, km });
+    }
+  });
+  pairs.sort((a, b) => a.km - b.km);
+  const nameForIdx = new Map();
+  const usedNames = new Set();
+  for (const { i, name } of pairs) {
+    if (nameForIdx.has(i) || usedNames.has(name)) continue;
+    nameForIdx.set(i, name);
+    usedNames.add(name);
+  }
+  return nameForIdx;
+}
+
+// Placemark único con una GeometryCollection (Google Earth "Guardar lugar como"
+// sobre una sola Place, sin carpetas): se aplana cada Point/LineString en su
+// propia capa, con nombre auto-asignado por cercanía al gazetteer y color
+// rotado (los colores originales no se conservan en este tipo de export).
+function flattenGeometryCollection(item) {
+  const { feature, folders } = item;
+  const geoms = feature.geometry.geometries ?? [];
+
+  const pointGeomIdxs = [];
+  const pointCoords = [];
+  geoms.forEach((g, i) => {
+    if (g.type === "Point") {
+      pointGeomIdxs.push(i);
+      pointCoords.push(g.coordinates);
+    }
+  });
+  const nameByPointOrder = assignGazetteerNames(pointCoords);
+  const nameByGeomIdx = new Map();
+  pointGeomIdxs.forEach((geomIdx, order) => {
+    if (nameByPointOrder.has(order)) nameByGeomIdx.set(geomIdx, nameByPointOrder.get(order));
+  });
+
+  let unnamedCount = 0;
+  let routeIdx = 0;
+  const usedRouteNames = new Map();
+  const uniqueRouteName = (name) => {
+    const count = (usedRouteNames.get(name) ?? 0) + 1;
+    usedRouteNames.set(name, count);
+    return count === 1 ? name : `${name} (${count})`;
+  };
+
+  const out = [];
+  for (const [i, g] of geoms.entries()) {
+    if (g.type === "Point") {
+      const name = nameByGeomIdx.get(i) ?? `Punto sin nombre ${++unnamedCount}`;
+      out.push({
+        feature: { type: "Feature", properties: { name }, geometry: g },
+        folders,
+        group: "pines",
+      });
+    } else if (g.type === "LineString" || g.type === "MultiLineString") {
+      const coords = g.type === "LineString" ? g.coordinates : g.coordinates[0];
+      const start = nearestGazetteerName(coords[0]);
+      const end = nearestGazetteerName(coords[coords.length - 1]);
+      routeIdx++;
+      const color = FALLBACK_ROUTE_COLORS[(routeIdx - 1) % FALLBACK_ROUTE_COLORS.length];
+      let name;
+      if (start && end && start !== end) name = `Vía ${start} – ${end}`;
+      else if (start || end) name = `Vía cerca de ${start ?? end}`;
+      else name = `Ruta ${routeIdx}`;
+      name = uniqueRouteName(name);
+      out.push({
+        feature: { type: "Feature", properties: { name, stroke: color }, geometry: g },
+        folders,
+        group: "vias",
+      });
+    }
+    // otros tipos de geometría dentro de la colección (Polygon, etc.) se ignoran.
+  }
+  return out;
+}
+
 // ── Recorrer el árbol de carpetas acumulando features con contexto ──
 const collected = []; // { feature, folders: [nombres...], group }
 function walk(node, folders) {
@@ -130,6 +254,15 @@ function walk(node, folders) {
   collected.push({ feature: node, folders, group });
 }
 walk(tree, []);
+
+// Expandir cualquier GeometryCollection en capas individuales (ver flattenGeometryCollection).
+const expanded = collected.flatMap((item) =>
+  item.feature.geometry?.type === "GeometryCollection"
+    ? flattenGeometryCollection(item)
+    : [item],
+);
+collected.length = 0;
+collected.push(...expanded);
 
 if (collected.length === 0) {
   console.error("El archivo no contiene placemarks convertibles.");
@@ -168,7 +301,7 @@ for (const { feature, folders, group } of collected) {
       { type: "Feature", properties: { name }, geometry },
     );
     if (kmlColorToHex(p.stroke)) entry.color = kmlColorToHex(p.stroke);
-  } else if (group === "notas" || isNota(feature)) {
+  } else if (group !== "pines" && (group === "notas" || isNota(feature))) {
     const key = `notas/${slug(folderName || "notas")}`;
     upsert(
       key,

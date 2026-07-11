@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-santa-elena",
+  "name": "Santa Elena",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 9
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Santa Elena"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.503858,
+     6.214965
+    ]
+   }
+  }
+ ]
+}

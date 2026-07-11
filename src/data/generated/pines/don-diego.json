@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-don-diego",
+  "name": "Don Diego",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 3
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Don Diego"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.480173,
+     6.091072
+    ]
+   }
+  }
+ ]
+}

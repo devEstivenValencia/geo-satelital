@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-llanogrande",
+  "name": "Llanogrande",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 7
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Llanogrande"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.423804,
+     6.123929
+    ]
+   }
+  }
+ ]
+}

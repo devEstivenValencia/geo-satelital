@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-la-ceja",
+  "name": "La Ceja",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 12
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "La Ceja"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.429321,
+     6.036436
+    ]
+   }
+  }
+ ]
+}
