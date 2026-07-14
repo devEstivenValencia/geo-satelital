@@ -56,7 +56,7 @@ export function LayerPanel({
   }
 
   return (
-    <div className="absolute left-4 top-4 z-10 w-72 rounded-xl border bg-background/90 shadow-lg backdrop-blur">
+    <div className="absolute left-4 top-4 z-10 grid max-h-[calc(100dvh-6rem)] w-72 grid-rows-[auto_auto_minmax(0,1fr)_auto_auto] overflow-hidden rounded-xl border bg-background/90 shadow-lg backdrop-blur">
       <div className="flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-2 font-semibold">
           <Layers className="size-4" />
@@ -72,7 +72,7 @@ export function LayerPanel({
         </Button>
       </div>
       <Separator />
-      <ScrollArea className="max-h-[60dvh]">
+      <ScrollArea className="h-full min-h-0">
         <div className="space-y-1 p-2">
           {groups.map((group) => {
             const total = group.layers.length;
