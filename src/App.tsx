@@ -3,6 +3,7 @@ import { MapView } from "@/components/MapView";
 import { RouteLayer } from "@/components/RouteLayer";
 import { PinMarker } from "@/components/PinMarker";
 import { NotaLabel } from "@/components/NotaLabel";
+import { ZoneLayer } from "@/components/ZoneLayer";
 import { BasemapSwitcher } from "@/components/BasemapSwitcher";
 import { LayerPanel } from "@/components/LayerPanel";
 import { SlideHud } from "@/components/SlideHud";
@@ -28,6 +29,8 @@ function LayerRenderer({ layer }: { layer: LayerDef }) {
       return <PinMarker layer={layer} />;
     case "label":
       return <NotaLabel layer={layer} />;
+    case "zone":
+      return <ZoneLayer layer={layer} />;
   }
 }
 
