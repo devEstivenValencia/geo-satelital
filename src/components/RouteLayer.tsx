@@ -35,7 +35,6 @@ export function RouteLayer({ layer }: { layer: LayerDef }) {
           "line-color": layer.color,
           "line-width": 3.5,
           "line-opacity": 0.95,
-          ...(layer.dashed ? { "line-dasharray": [2, 1.6] } : {}),
         }}
       />
     </>
