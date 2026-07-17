@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-aroma-s-pizzeria",
+  "name": "Aroma's Pizzería",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 16
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Aroma's Pizzería"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.433513,
+     6.1907378
+    ]
+   }
+  }
+ ]
+}

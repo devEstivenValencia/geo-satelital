@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-mirador-alto-de-montanita",
+  "name": "Mirador Alto de Montañita",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 17
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Mirador Alto de Montañita"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.2578437,
+     6.173242
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-mi-viejo-canada",
+  "name": "Mi Viejo Canadá",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 14
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Mi Viejo Canadá"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.3792018,
+     6.0741031
+    ]
+   }
+  }
+ ]
+}

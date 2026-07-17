@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-el-carmen-de-viboral",
+  "name": "El Carmen de Viboral",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 13
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "El Carmen de Viboral"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.337488,
+     6.087915
+    ]
+   }
+  }
+ ]
+}

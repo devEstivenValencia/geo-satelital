@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-primax-la-maria",
+  "name": "Primax La María",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 18
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Primax La María"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.2690501,
+     6.1349671
+    ]
+   }
+  }
+ ]
+}

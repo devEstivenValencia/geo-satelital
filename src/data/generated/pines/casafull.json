@@ -1,0 +1,27 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "id": "pin-casafull",
+  "name": "CASAFULL",
+  "group": "pines",
+  "kind": "pin",
+  "color": "#ffd400",
+  "defaultVisible": true,
+  "order": 15
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "CASAFULL"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.3827084,
+     6.2032931
+    ]
+   }
+  }
+ ]
+}
