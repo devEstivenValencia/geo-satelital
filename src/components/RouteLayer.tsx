@@ -1,3 +1,4 @@
+import type { Feature, LineString } from "geojson";
 import { MapGeoJSON, MapMarker, MarkerContent } from "@/components/ui/map";
 import type { LayerDef } from "@/lib/layer-types";
 import { lineMidpoint } from "@/lib/geo";
@@ -13,7 +14,7 @@ const ROUND: { "line-cap": "round"; "line-join": "round" } = {
 
 export function RouteLayer({ layer }: { layer: LayerDef }) {
   const segments = layer.data.features
-    .filter((f) => f.geometry.type === "LineString")
+    .filter((f): f is Feature<LineString> => f.geometry.type === "LineString")
     .map((f) => f.geometry.coordinates as [number, number][]);
   const midpoint = lineMidpoint(segments);
 
