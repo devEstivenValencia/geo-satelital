@@ -56,7 +56,7 @@ export function LayerPanel({
   }
 
   return (
-    <div className="absolute left-4 top-4 z-10 grid max-h-[calc(100dvh-6rem)] w-72 grid-rows-[auto_auto_minmax(0,1fr)_auto_auto] overflow-hidden rounded-xl border bg-background/90 shadow-lg backdrop-blur">
+    <div className="absolute left-4 top-4 z-10 grid max-h-[calc(100dvh-6rem)] w-72 grid-cols-[minmax(0,1fr)] grid-rows-[auto_auto_minmax(0,1fr)_auto_auto] overflow-hidden rounded-xl border bg-background/90 shadow-lg backdrop-blur">
       <div className="flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-2 font-semibold">
           <Layers className="size-4" />
@@ -109,7 +109,7 @@ export function LayerPanel({
                         />
                         <Label
                           htmlFor={`switch-${layer.id}`}
-                          className="flex-1 cursor-pointer truncate text-sm font-normal"
+                          className="min-w-0 flex-1 cursor-pointer truncate text-sm font-normal"
                           title={layer.name}
                         >
                           {layer.name}
