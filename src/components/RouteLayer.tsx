@@ -1,5 +1,6 @@
-import { MapGeoJSON } from "@/components/ui/map";
+import { MapGeoJSON, MapMarker, MarkerContent } from "@/components/ui/map";
 import type { LayerDef } from "@/lib/layer-types";
+import { lineMidpoint } from "@/lib/geo";
 
 // Contorno oscuro bajo la línea de color, como en Google Earth.
 // Si el orden de capas da problemas al cambiar de basemap, apagar aquí.
@@ -11,6 +12,11 @@ const ROUND: { "line-cap": "round"; "line-join": "round" } = {
 };
 
 export function RouteLayer({ layer }: { layer: LayerDef }) {
+  const segments = layer.data.features
+    .filter((f) => f.geometry.type === "LineString")
+    .map((f) => f.geometry.coordinates as [number, number][]);
+  const midpoint = lineMidpoint(segments);
+
   return (
     <>
       {ROUTE_CASING && (
@@ -37,6 +43,19 @@ export function RouteLayer({ layer }: { layer: LayerDef }) {
           "line-opacity": 0.95,
         }}
       />
+      {midpoint && (
+        <MapMarker longitude={midpoint.point[0]} latitude={midpoint.point[1]} anchor="center">
+          <MarkerContent>
+            <div className="flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm">
+              <span
+                className="h-2 w-2 shrink-0 rounded-full"
+                style={{ backgroundColor: layer.color }}
+              />
+              {midpoint.totalKm.toFixed(1)} km
+            </div>
+          </MarkerContent>
+        </MapMarker>
+      )}
     </>
   );
 }
